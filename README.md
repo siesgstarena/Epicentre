@@ -47,14 +47,15 @@ npm install
 ### Run the server
 ```
 npm start
-npm run start-dev
+npm run dev
 ```
 ### (Development) Testing and Fixing Code Quality
 ```
-npm run tslint
-tslint --fix --project .
+npm run lint
+npm run fix
 ```
 ### (Development) Run tests
+We will add unit tests soon. Testing will be done via Travis CI
 ```
 npm run test
 ```
