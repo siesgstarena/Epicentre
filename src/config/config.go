@@ -4,5 +4,5 @@ import "fmt"
 
 // Loadconfig Loads the config
 func Loadconfig()  {
-	fmt.Println("Inside Config")
+	fmt.Println("Loading Config")
 }
