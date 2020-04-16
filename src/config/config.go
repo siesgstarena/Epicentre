@@ -1,12 +1,11 @@
 package config
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/src/web"
+	// "github.com/siesgstarena/epicentre/src/services/logger"
+	env "github.com/caarlos0/env/v6"
 )
-
-import env "github.com/caarlos0/env/v6"
 
 type config struct {
 	Port         string           `env:"PORT" envDefault:"8000"`
@@ -14,11 +13,11 @@ type config struct {
 
 // LoadConfig Loads the config
 func LoadConfig(router *gin.Engine)  {
-	fmt.Println("Loading Config")
+	// logger.Info("Loading Config")
 
 	cfg := config{}
 	if err := env.Parse(&cfg); err != nil {
-		fmt.Printf("%+v\n", err)
+		// logger.Error("%+v\n", err)
 	}
 
 	router.NoRoute(func(c *gin.Context) {
