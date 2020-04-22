@@ -7,10 +7,11 @@ import (
 )
 
 // Config Available everywhere
-var Config *config
+var Config *MainConfig
 
 type (
-	config struct {
+	// MainConfig Type exported for use as input type in functions
+	MainConfig struct {
 		Port       string			`env:"PORT" envDefault:"8000"`
 		FileName   string			`env:"FILENAME" envDefault:"zap.log"`			
 		MaxSize    int				`env:"MAXSIZE" envDefault:"100"`
@@ -26,7 +27,7 @@ type (
 func LoadConfig(router *gin.Engine)  {
 	fmt.Println("Initializing LoadConfig")
 
-	cfg := config{}
+	cfg := MainConfig{}
 	if err := env.Parse(&cfg); err != nil {
 		panic(err)
 	}

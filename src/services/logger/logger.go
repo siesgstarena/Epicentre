@@ -8,14 +8,15 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"github.com/siesgstarena/epicentre/src/config"
 )
 
 // Log is a package variable, which is initialized once during NewLogger() and shared to whole application
 var Log Logger
 
 type (
-	// Config : Logger configuration
-	Config struct {
+	// LogConfig : Logger configuration
+	LogConfig struct {
 		FileName   string
 		MaxSize    int
 		MaxAge     int
@@ -27,17 +28,29 @@ type (
 
 	// Logger ...
 	Logger struct {
-		logConfig *Config
+		logConfig *LogConfig
 		log       *zap.SugaredLogger
 	}
 )
 
-func (c Config) getLogFileName() string {
+func (c LogConfig) getLogFileName() string {
 	return fmt.Sprintf("../logs/%s", c.FileName)
 }
 
 // LoadLogger : Creates a new instance of logger
-func LoadLogger(config Config) error {
+func LoadLogger(inputConfig config.MainConfig) error {
+
+	// access outside logger package
+	config := LogConfig {
+		FileName:   config.Config.FileName,
+		MaxSize:    config.Config.MaxSize,
+		MaxAge:     config.Config.MaxAge,
+		MaxBackUp:  config.Config.MaxBackUp,
+		Compress:   config.Config.Compress,
+		Level:      config.Config.Level,
+		OutputType: config.Config.OutputType,
+	}
+
 	// initialize a new zap logger with lumberjack configuration
 	fileLogger := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   "../logs/zap.log",
@@ -67,7 +80,7 @@ func LoadLogger(config Config) error {
 	return nil
 }
 
-func (c *Config) getLogLevel() zapcore.Level {
+func (c *LogConfig) getLogLevel() zapcore.Level {
 	switch strings.ToLower(strings.TrimSpace(c.Level)) {
 	case "debug":
 		return zapcore.DebugLevel
@@ -89,7 +102,7 @@ func newZapConfig() zapcore.EncoderConfig {
 	return zapConfig
 }
 
-func (c *Config) getZapCore(fileLogger zapcore.WriteSyncer, logLevel zapcore.Level, zapConfig zapcore.EncoderConfig) zapcore.Core {
+func (c *LogConfig) getZapCore(fileLogger zapcore.WriteSyncer, logLevel zapcore.Level, zapConfig zapcore.EncoderConfig) zapcore.Core {
 	switch strings.ToLower(strings.TrimSpace(c.OutputType)) {
 	case "json":
 		return zapcore.NewCore(zapcore.NewJSONEncoder(zapConfig), zapcore.NewMultiWriteSyncer(fileLogger, zapcore.AddSync(os.Stdout)), logLevel)

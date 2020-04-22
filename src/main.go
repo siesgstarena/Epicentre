@@ -13,18 +13,7 @@ func main() {
 
 	config.LoadConfig(router)
 
-	// access outside logger package
-	loggerConfig := logger.Config{
-		FileName:   config.Config.FileName,
-		MaxSize:    config.Config.MaxSize,
-		MaxAge:     config.Config.MaxAge,
-		MaxBackUp:  config.Config.MaxBackUp,
-		Compress:   config.Config.Compress,
-		Level:      config.Config.Level,
-		OutputType: config.Config.OutputType,
-	}
-
-	err := logger.LoadLogger(loggerConfig)
+	err := logger.LoadLogger(*config.Config)
 	if err != nil {
 		panic(err)
 	}
