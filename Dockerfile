@@ -7,7 +7,7 @@ ENV GO111MODULE=on \
     GOARCH=amd64
 
 # Move to working directory /github.com/siesgstarena/epicentre/src
-WORKDIR /github.com/siesgstarena/epicentre/src
+WORKDIR /github.com/siesgstarena/epicentre
 
 # Copy and download dependency using go mod
 COPY src/go.mod .
@@ -16,9 +16,6 @@ RUN go mod download
 
 # Copy the code into the container
 COPY src .
-
-# Move to working directory /github.com/siesgstarena/epicentre/src
-WORKDIR /
 
 # Build the application
 RUN go build -o main github.com/siesgstarena/epicentre/src

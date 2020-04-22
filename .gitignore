@@ -6,6 +6,7 @@
 *.dylib
 *.test
 *.out
+vendor/
 *mock*
 .DS_Store
 .vscode/
