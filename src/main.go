@@ -17,7 +17,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	logger.Log.Info("Logger Installed Successfully")
 
 	routes.LoadRouter(router)
