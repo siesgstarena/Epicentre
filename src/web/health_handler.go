@@ -1,9 +1,9 @@
 package web
 
 import (
-	"fmt"
 	"time"
 	"github.com/gin-gonic/gin"
+	"github.com/siesgstarena/epicentre/src/services/logger"
 )
 
 type health struct {
@@ -15,7 +15,7 @@ type health struct {
 
 // HeathHandler Sends info about health of API
 func HeathHandler(c *gin.Context)  {
-	fmt.Println("Inside Health Handler")
+	logger.Log.Info("Inside Health Handler")
 	info := new(health)
 	info.Name = "epicentre"
 	info.Description = "Cloud Monitoring and Alerting Tool built by SIESGSTarena Platform Team)"

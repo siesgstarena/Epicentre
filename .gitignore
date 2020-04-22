@@ -10,4 +10,4 @@ vendor/
 *mock*
 .DS_Store
 .vscode/
-src
+logs/
