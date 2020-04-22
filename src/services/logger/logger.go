@@ -36,11 +36,11 @@ func (c Config) getLogFileName() string {
 	return fmt.Sprintf("../logs/%s", c.FileName)
 }
 
-// NewLogger : Creates a new instance of logger
-func NewLogger(config Config) error {
+// LoadLogger : Creates a new instance of logger
+func LoadLogger(config Config) error {
 	// initialize a new zap logger with lumberjack configuration
 	fileLogger := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   config.getLogFileName(),
+		Filename:   "../logs/zap.log",
 		MaxAge:     config.MaxAge,
 		MaxSize:    config.MaxSize,
 		MaxBackups: config.MaxBackUp,

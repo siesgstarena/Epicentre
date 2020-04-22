@@ -17,8 +17,8 @@ type (
 		MaxAge     int				`env:"MAXAGE" envDefault:"10"`
 		MaxBackUp  int				`env:"MAZBACKUP" envDefault:"5"`
 		Compress   bool				`env:"COMPRESS" envDefault:"false"`
-		Level      string			`env:"LEVEL" envDefault:"INFO"`
-		OutputType string			`env:"OUTPUTTYPE" envDefault:"JSON"`
+		Level      string			`env:"LEVEL" envDefault:"info"`
+		OutputType string			`env:"OUTPUTTYPE" envDefault:"json"`
 	}
 )
 
@@ -31,7 +31,12 @@ func LoadConfig(router *gin.Engine)  {
 		panic(err)
 	}
 
+	// Address of parsed configs passing to Global Config variable
 	Config = &cfg
+
+	// Configuring Static Assets for development
+	router.Static("/assets", "../images")
+	router.StaticFile("/favicon.ico", "../images/favicon.ico")
 
 	fmt.Println("Initialization Finished")
 }
