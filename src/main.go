@@ -9,15 +9,19 @@ import (
 
 func main() {
 
-	router := gin.Default()
+	err := config.LoadConfig()
 
-	config.LoadConfig(router)
+	if err != nil {
+		panic(err)
+	}
 
-	err := logger.LoadLogger(*config.Config)
+	err = logger.LoadLogger(*config.Config)
 	if err != nil {
 		panic(err)
 	}
 	logger.Log.Info("Logger Installed Successfully")
+
+	router := gin.Default()
 
 	routes.LoadRouter(router)
 

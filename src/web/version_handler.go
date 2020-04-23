@@ -4,7 +4,6 @@ import (
 	"runtime"
 	"time"
 	"github.com/gin-gonic/gin"
-	"github.com/siesgstarena/epicentre/src/services/logger"
 )
 
 type version struct {
@@ -16,7 +15,6 @@ type version struct {
 
 // VersionHandler Sends info about version of API
 func VersionHandler(c *gin.Context)  {
-	logger.Log.Info("Inside Health Handler")
 	info := new(version)
 	info.Name = "epicentre"
 	info.Description = "Cloud Monitoring and Alerting Tool built by SIESGSTarena Platform Team)"
