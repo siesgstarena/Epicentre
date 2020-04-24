@@ -1,1 +1,1 @@
-web: /bin/epicentre
+web: ./bin/epicentre
