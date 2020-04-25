@@ -1,5 +1,6 @@
 *.exe
 *.exe~
+.env
 *.dll
 *.so
 *.dylib
@@ -9,3 +10,4 @@ vendor/
 *mock*
 .DS_Store
 .vscode/
+logs/
