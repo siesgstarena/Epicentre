@@ -5,6 +5,7 @@ import (
 	"github.com/siesgstarena/epicentre/config"
 	routes "github.com/siesgstarena/epicentre/router"
 	"github.com/siesgstarena/epicentre/services/logger"
+	"github.com/siesgstarena/epicentre/services/mongo"
 )
 
 func main() {
@@ -20,6 +21,8 @@ func main() {
 		panic(err)
 	}
 	logger.Log.Info("Logger Installed Successfully")
+
+	mongo.LoadMongo()
 
 	router := gin.Default()
 
