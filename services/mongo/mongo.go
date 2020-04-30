@@ -5,14 +5,25 @@ import (
 	"fmt"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// Client Available everywhere for MongoDB Connection
+// Client For MongoDB 
 var Client *mongo.Client
+
+// Ctx For MongoDB 
+var Ctx *context.Context
+
+// User Collection exported for use in APIs
+var User *mongo.Collection
+
+// Project Collection exported for use in APIs
+var Project *mongo.Collection
+
+// Rules Collection exported for use in APIs
+var Rules *mongo.Collection
 
 // LoadMongo Helps configure mongo
 func LoadMongo()  {
@@ -27,8 +38,7 @@ func LoadMongo()  {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	defer client.Disconnect(ctx)
+	Ctx = &ctx
 
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
@@ -36,9 +46,9 @@ func LoadMongo()  {
 	}
 	fmt.Println("MongoDB Connected Successfully")
 
-	databases, err := Client.ListDatabaseNames(ctx, bson.M{})
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(databases)
+	epicentreDatabase := client.Database("epicentre")
+    User = epicentreDatabase.Collection("users")
+	Project = epicentreDatabase.Collection("projects")
+	Rules = epicentreDatabase.Collection("rules")
+
 }

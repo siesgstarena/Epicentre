@@ -29,4 +29,7 @@ func main() {
 	routes.LoadRouter(router)
 
 	router.Run(":" + config.Config.Port)
+
+	// defer mongo.Client.Disconnect(*mongo.Ctx)
+
 }
