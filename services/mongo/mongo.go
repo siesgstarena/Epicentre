@@ -13,9 +13,6 @@ import (
 // Client For MongoDB 
 var Client *mongo.Client
 
-// Ctx For MongoDB 
-var Ctx *context.Context
-
 // User Collection exported for use in APIs
 var User *mongo.Collection
 
@@ -33,12 +30,13 @@ func LoadMongo()  {
 	}
 	Client = client
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	err = client.Connect(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	Ctx = &ctx
 
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {

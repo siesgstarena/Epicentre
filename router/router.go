@@ -22,7 +22,16 @@ func LoadRouter(router *gin.Engine) {
 	{
 		handler.GET("health", web.HeathHandler)
 		handler.GET("version", web.VersionHandler)
-		handler.GET("user", model.CreateUser)
+	}
+
+	user := router.Group("/user")
+	{
+		user.POST("create", model.CreateUser)
+	}
+
+	project := router.Group("/project")
+	{
+		project.POST("create", model.CreateProject)
 	}
 
 	logger.Log.Info("Initialization of routers Finished")

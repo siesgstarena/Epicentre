@@ -11,15 +11,18 @@ import (
 // CreateUser Creates & Stores in MongoDB Database
 func CreateUser(c *gin.Context)  {
 
-	result, err := mongo.User.InsertOne(*mongo.Ctx, bson.D{
-		{Key: "name", Value: "Swapnil Satish Shinde"},
-		{Key: "email", Value: "swapnil.satish17@siesgst.ac.in"},
-		{Key: "position", Value: "Backend Developer"},
+	var user User
+	c.BindJSON(&user)
+
+	_, err := mongo.User.InsertOne(c, bson.D{
+		{Key: "name", Value: user.Name},
+		{Key: "email", Value: user.Email},
+		{Key: "position", Value: user.Position},
 	})
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	c.JSON(200, result.InsertedID)
+	c.JSON(200, gin.H{"message":"User Created Sucessfully"})
 }
