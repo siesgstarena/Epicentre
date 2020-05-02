@@ -10,20 +10,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// Client For MongoDB 
+// Client For MongoDB
 var Client *mongo.Client
 
-// User Collection exported for use in APIs
-var User *mongo.Collection
+// Users Collection exported for use in APIs
+var Users *mongo.Collection
 
-// Project Collection exported for use in APIs
-var Project *mongo.Collection
+// Projects Collection exported for use in APIs
+var Projects *mongo.Collection
 
 // Rules Collection exported for use in APIs
 var Rules *mongo.Collection
 
 // LoadMongo Helps configure mongo
-func LoadMongo()  {
+func LoadMongo() {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://Swapnil:vijaya26@cluster0-oslju.mongodb.net/test?retryWrites=true&w=majority"))
 	if err != nil {
 		fmt.Println(err)
@@ -45,8 +45,8 @@ func LoadMongo()  {
 	fmt.Println("MongoDB Connected Successfully")
 
 	epicentreDatabase := client.Database("epicentre")
-    User = epicentreDatabase.Collection("users")
-	Project = epicentreDatabase.Collection("projects")
+	Users = epicentreDatabase.Collection("users")
+	Projects = epicentreDatabase.Collection("projects")
 	Rules = epicentreDatabase.Collection("rules")
 
 }

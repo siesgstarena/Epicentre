@@ -11,10 +11,10 @@ import (
 // CreateProject Creates & Stores in MongoDB Database
 func CreateProject(c *gin.Context)  {
 
-	var project Project
+	var project Projects
 	c.BindJSON(&project)
 
-	_, err := mongo.Project.InsertOne(c, bson.D{
+	_, err := mongo.Projects.InsertOne(c, bson.D{
 		{Key: "name", Value: project.Name},
 		{Key: "description", Value: project.Description},
 		{Key: "admins", Value: project.Admins},

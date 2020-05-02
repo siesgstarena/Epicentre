@@ -2,11 +2,11 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-//Rule Type exported for use in API
-type Rule struct {
+//Rules Type exported for use in API
+type Rules struct {
 	ID     			primitive.ObjectID 	`bson:"_id,omitempty"`
-	User			User 				`bson:"userid,omitempty"`
-	Project   		Project 			`bson:"projectid,omitempty"`
+	UserID			primitive.ObjectID 	`bson:"userid,omitempty"`
+	ProjectID   	primitive.ObjectID	`bson:"projectid,omitempty"`
 	HerokuAddons 	bool				`bson:"herokuaddons,omitempty"`
 	HerokuBuilds 	bool				`bson:"herokubuilds,omitempty"`
 	CreateBranch 	bool 				`bson:"createbranch,omitempty"`

@@ -11,10 +11,10 @@ import (
 // CreateUser Creates & Stores in MongoDB Database
 func CreateUser(c *gin.Context)  {
 
-	var user User
+	var user Users
 	c.BindJSON(&user)
 
-	_, err := mongo.User.InsertOne(c, bson.D{
+	_, err := mongo.Users.InsertOne(c, bson.D{
 		{Key: "name", Value: user.Name},
 		{Key: "email", Value: user.Email},
 		{Key: "position", Value: user.Position},

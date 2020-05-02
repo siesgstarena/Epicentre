@@ -34,5 +34,10 @@ func LoadRouter(router *gin.Engine) {
 		project.POST("create", model.CreateProject)
 	}
 
+	rule := router.Group("/rule")
+	{
+		rule.POST("create", model.CreateRule)
+	}
+
 	logger.Log.Info("Initialization of routers Finished")
 }
