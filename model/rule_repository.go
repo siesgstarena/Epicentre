@@ -24,22 +24,22 @@ func CreateRule(c *gin.Context)  {
 		fmt.Println(err)
 	}
 
-	_, err = mongo.Rules.InsertOne(c, bson.D{
-		{Key: "userid", Value: userID},
-		{Key: "projectid", Value: projectID},
-		{Key: "herokuaddons", Value: rule.HerokuAddons},
-		{Key: "herokubuilds", Value: rule.HerokuBuilds},
-		{Key: "createbranch", Value: rule.CreateBranch},
-		{Key: "deletebranch", Value: rule.DeleteBranch},
-		{Key: "pr", Value: rule.PR},
-		{Key: "prreview", Value: rule.PrReview},
-		{Key: "push", Value: rule.Push},
-		{Key: "release", Value: rule.Release},
-		{Key: "issues", Value: rule.Issues},
-		{Key: "forks", Value: rule.Forks},
-		{Key: "projectboard", Value: rule.ProjectBoard},
-		{Key: "projectcard", Value: rule.ProjectCard},
-		{Key: "projectcolumn", Value: rule.ProjectColumn},
+	_, err = mongo.Rules.InsertOne(c, bson.M{
+		"userid": userID,
+		"projectid": projectID,
+		"herokuaddons": rule.HerokuAddons,
+		"herokubuilds": rule.HerokuBuilds,
+		"createbranch": rule.CreateBranch,
+		"deletebranch": rule.DeleteBranch,
+		"pr": rule.PR,
+		"prreview": rule.PrReview,
+		"push": rule.Push,
+		"release": rule.Release,
+		"issues": rule.Issues,
+		"forks": rule.Forks,
+		"projectboard": rule.ProjectBoard,
+		"projectcard": rule.ProjectCard,
+		"projectcolumn": rule.ProjectColumn,
 	})
 
 	if err != nil {
@@ -47,4 +47,60 @@ func CreateRule(c *gin.Context)  {
 	}
 
 	c.JSON(200, gin.H{"message":"rule Created Sucessfully"})
+}
+
+// EditRule Edits user profile info
+func EditRule(c *gin.Context)  {
+
+	var rule Rules 
+	c.BindJSON(&rule)
+
+	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	userID, err := primitive.ObjectIDFromHex(rule.UserID.Hex())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	projectID, err := primitive.ObjectIDFromHex(rule.ProjectID.Hex())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	filter := bson.M{"_id": ruleID} 
+
+	update := bson.M{
+		"$set": bson.M{
+			"userid": userID,
+			"projectid": projectID,
+			"herokuaddons": rule.HerokuAddons,
+			"herokubuilds": rule.HerokuBuilds,
+			"createbranch": rule.CreateBranch,
+			"deletebranch": rule.DeleteBranch,
+			"pr": rule.PR,
+			"prreview": rule.PrReview,
+			"push": rule.Push,
+			"release": rule.Release,
+			"issues": rule.Issues,
+			"forks": rule.Forks,
+			"projectboard": rule.ProjectBoard,
+			"projectcard": rule.ProjectCard,
+			"projectcolumn": rule.ProjectColumn,
+		},
+	}
+
+	result, err := mongo.Rules.UpdateOne(c,filter,update)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if result.MatchedCount > 0 {
+		c.JSON(200, gin.H{"message":"Rule Edited Sucessfully"})
+	} else {
+		c.JSON(200, gin.H{"message":"No such rule"})
+	}
 }
