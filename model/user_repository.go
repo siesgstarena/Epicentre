@@ -105,3 +105,27 @@ func UserInfo(c *gin.Context)  {
 
 	c.JSON(200, user)
 }
+
+// RuleForAProjectConnectedToUser Gives information of a Rule for a Project for a perticular User
+func RuleForAProjectConnectedToUser(c *gin.Context)  {
+
+	var rule Rules
+
+	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	projectID, err := primitive.ObjectIDFromHex(c.Param("projectid"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	filter := bson.M{"userid":userID,"projectid":projectID}
+
+	if err := mongo.Rules.FindOne(c, filter).Decode(&rule); err != nil {
+		fmt.Println(err)
+	}
+
+	c.JSON(200, rule)
+}

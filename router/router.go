@@ -30,6 +30,7 @@ func LoadRouter(router *gin.Engine) {
 		user.POST("create", model.CreateUser)
 		user.PUT("edit/:id", model.EditUser)
 		user.DELETE("delete/:id", model.DeleteUser)
+		user.GET("/:id/project/:projectid",model.RuleForAProjectConnectedToUser)
 	}
 
 	admin := router.Group("/admin")
@@ -43,7 +44,7 @@ func LoadRouter(router *gin.Engine) {
 		project.POST("create", model.CreateProject)
 		project.PUT("edit/:id", model.EditProject)
 		project.DELETE("delete/:id", model.DeleteProject)
-		// project.GET("/:id/users",model.AllUsersInProject)
+		project.GET("/:id/users",model.AllUsersInProject)
 	}
 
 	rule := router.Group("/rule")

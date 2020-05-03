@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/services/mongo"
+	MongoDB "go.mongodb.org/mongo-driver/mongo"
+	// "go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -151,30 +153,26 @@ func ProjectInfo(c *gin.Context)  {
 }
 
 // AllUsersInProject List All Users Monitoring a Project
-// func AllUsersInProject(c *gin.Context)  {
+func AllUsersInProject(c *gin.Context)  {
 
-// 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
+	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
 
-// 	cursor, err := mongo.Rules.Find(c, bson.M{"projectid": projectID})
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
+	matchStage := bson.D{{Key: "$match", Value:bson.D{{Key:"projectid", Value:projectID}}}}
+	lookupStage := bson.D{{Key: "$lookup", Value:bson.D{{Key: "from", Value:"users"}, {Key: "localField",Value: "userid"}, {Key: "foreignField",Value: "_id"}, {Key: "as",Value: "userid"}}}}
+	unwindStage := bson.D{{Key: "$unwind", Value:bson.D{{Key: "path", Value:"$userid"}}}}
 
-// 	var users []string
+	showLoadedCursor, err := mongo.Rules.Aggregate(c, MongoDB.Pipeline{ matchStage, lookupStage, unwindStage})
+	if err != nil {
+		panic(err)
+	}
+	var rules []bson.M
+	if err = showLoadedCursor.All(c, &rules); err != nil {
+		panic(err)
+	}
+	fmt.Println(rules)
 
-// 	for cursor.Next(c) {
-// 		var rule Rules
-// 		if err := cursor.Decode(&rule); err != nil {
-// 			fmt.Println(err)
-// 		}
-// 		users = append(users, rule.UserID.Hex())
-// 	}
-// 	if err := cursor.Err(); err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	c.JSON(200, users)
-// }
+	c.JSON(200, rules)
+}
