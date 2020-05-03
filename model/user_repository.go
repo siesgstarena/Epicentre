@@ -61,3 +61,28 @@ func EditUser(c *gin.Context)  {
 		c.JSON(200, gin.H{"message":"No such user"})
 	}
 }
+
+// DeleteProject Deletes project from MongoDB Database
+func DeleteProject(c *gin.Context)  {
+
+	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	resultRule, err := mongo.Rules.DeleteMany(c, bson.M{"projectid": projectID})
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	resultproject, err := mongo.Projects.DeleteOne(c,bson.M{"_id": projectID})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if resultRule.DeletedCount > 0 || resultproject.DeletedCount > 0 {
+		c.JSON(200, gin.H{"message":"Project deleted Sucessfully"})
+	} else {
+		c.JSON(200, gin.H{"message":"No such project"})
+	}
+}

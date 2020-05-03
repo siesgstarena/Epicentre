@@ -49,7 +49,7 @@ func CreateRule(c *gin.Context)  {
 	c.JSON(200, gin.H{"message":"rule Created Sucessfully"})
 }
 
-// EditRule Edits user profile info
+// EditRule Edits rules for project info
 func EditRule(c *gin.Context)  {
 
 	var rule Rules 
@@ -100,6 +100,26 @@ func EditRule(c *gin.Context)  {
 
 	if result.MatchedCount > 0 {
 		c.JSON(200, gin.H{"message":"Rule Edited Sucessfully"})
+	} else {
+		c.JSON(200, gin.H{"message":"No such rule"})
+	}
+}
+
+// DeleteRule Deletes rule from MongoDB Database
+func DeleteRule(c *gin.Context)  {
+
+	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	resultRule, err := mongo.Rules.DeleteOne(c, bson.M{"_id": ruleID})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if resultRule.DeletedCount > 0 {
+		c.JSON(200, gin.H{"message":"Rule deleted Sucessfully"})
 	} else {
 		c.JSON(200, gin.H{"message":"No such rule"})
 	}
