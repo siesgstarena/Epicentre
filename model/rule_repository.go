@@ -124,3 +124,22 @@ func DeleteRule(c *gin.Context)  {
 		c.JSON(200, gin.H{"message":"No such rule"})
 	}
 }
+
+// RuleInfo Gives information of a Rule
+func RuleInfo(c *gin.Context)  {
+
+	var rule Rules
+
+	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	filter := bson.M{"_id":ruleID}
+
+	if err := mongo.Rules.FindOne(c, filter).Decode(&rule); err != nil {
+		fmt.Println(err)
+	}
+
+	c.JSON(200, rule)
+}

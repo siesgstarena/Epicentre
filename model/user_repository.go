@@ -86,3 +86,22 @@ func DeleteProject(c *gin.Context)  {
 		c.JSON(200, gin.H{"message":"No such project"})
 	}
 }
+
+// UserInfo Gives information of a User
+func UserInfo(c *gin.Context)  {
+
+	var user Users
+
+	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	filter := bson.M{"_id":userID}
+
+	if err := mongo.Users.FindOne(c, filter).Decode(&user); err != nil {
+		fmt.Println(err)
+	}
+
+	c.JSON(200, user)
+}

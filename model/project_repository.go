@@ -98,3 +98,83 @@ func DeleteUser(c *gin.Context)  {
 		c.JSON(200, gin.H{"message":"No such user"})
 	}
 }
+
+// ProjectsWhereUserAdmin List All Projects of User in which admin
+func ProjectsWhereUserAdmin(c *gin.Context)  {
+
+	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	filter := bson.M{"admins": bson.M{"$elemMatch": bson.M{"$eq": userID}}}
+
+	cursor, err := mongo.Projects.Find(c, filter)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var allProjects []Projects
+
+	for cursor.Next(c) {
+		var project Projects
+		if err := cursor.Decode(&project); err != nil {
+			fmt.Println(err)
+		}
+		allProjects = append(allProjects, project)
+	}
+	if err := cursor.Err(); err != nil {
+		fmt.Println(err)
+	}
+
+	c.JSON(200, allProjects)
+
+}
+
+// ProjectInfo Gives information of a Project
+func ProjectInfo(c *gin.Context)  {
+
+	var project Projects
+
+	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	filter := bson.M{"_id":projectID}
+
+	if err := mongo.Projects.FindOne(c, filter).Decode(&project); err != nil {
+		fmt.Println(err)
+	}
+
+	c.JSON(200, project)
+}
+
+// AllUsersInProject List All Users Monitoring a Project
+// func AllUsersInProject(c *gin.Context)  {
+
+// 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	cursor, err := mongo.Rules.Find(c, bson.M{"projectid": projectID})
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	var users []string
+
+// 	for cursor.Next(c) {
+// 		var rule Rules
+// 		if err := cursor.Decode(&rule); err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		users = append(users, rule.UserID.Hex())
+// 	}
+// 	if err := cursor.Err(); err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	c.JSON(200, users)
+// }

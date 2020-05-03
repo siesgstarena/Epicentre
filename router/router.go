@@ -26,23 +26,32 @@ func LoadRouter(router *gin.Engine) {
 
 	user := router.Group("/user")
 	{
+		user.GET("/:id",model.UserInfo)
 		user.POST("create", model.CreateUser)
 		user.PUT("edit/:id", model.EditUser)
 		user.DELETE("delete/:id", model.DeleteUser)
 	}
 
+	admin := router.Group("/admin")
+	{
+		admin.GET("/:id", model.ProjectsWhereUserAdmin)
+	}
+
 	project := router.Group("/project")
 	{
+		project.GET("/:id",model.ProjectInfo)
 		project.POST("create", model.CreateProject)
 		project.PUT("edit/:id", model.EditProject)
 		project.DELETE("delete/:id", model.DeleteProject)
+		// project.GET("/:id/users",model.AllUsersInProject)
 	}
 
 	rule := router.Group("/rule")
 	{
+		rule.GET("/:id",model.RuleInfo)
 		rule.POST("create", model.CreateRule)
 		rule.PUT("edit/:id", model.EditRule)
-		// rule.DELETE("delete/:id", model.DeleteRule)
+		rule.DELETE("delete/:id", model.DeleteRule)
 	}
 
 	logger.Log.Info("Initialization of routers Finished")
