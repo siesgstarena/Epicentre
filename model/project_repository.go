@@ -1,11 +1,9 @@
 package model
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/services/mongo"
 	MongoDB "go.mongodb.org/mongo-driver/mongo"
-	// "go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -26,7 +24,7 @@ func CreateProject(c *gin.Context)  {
 	})
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	c.JSON(200, gin.H{"message":"Project Created Sucessfully"})
@@ -40,7 +38,7 @@ func EditProject(c *gin.Context)  {
 
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"_id": projectID} 
@@ -59,7 +57,7 @@ func EditProject(c *gin.Context)  {
 	result, err := mongo.Projects.UpdateOne(c,filter,update)
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	if result.MatchedCount > 0 {
@@ -74,24 +72,24 @@ func DeleteUser(c *gin.Context)  {
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	resultUser, err := mongo.Users.DeleteOne(c, bson.M{"_id": userID})
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	resultRule, err := mongo.Rules.DeleteMany(c, bson.M{"userid": userID})
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"admins": bson.M{"$elemMatch": bson.M{"$eq": userID}}}
 
 	resultproject, err := mongo.Projects.UpdateMany(c,filter,bson.M{ "$pull": bson.M{"admins": userID} })
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	if resultUser.DeletedCount > 0 || resultRule.DeletedCount > 0 || resultproject.ModifiedCount > 0 {
@@ -106,31 +104,23 @@ func ProjectsWhereUserAdmin(c *gin.Context)  {
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"admins": bson.M{"$elemMatch": bson.M{"$eq": userID}}}
 
 	cursor, err := mongo.Projects.Find(c, filter)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
-	var allProjects []Projects
+	var allProjects []bson.M
 
-	for cursor.Next(c) {
-		var project Projects
-		if err := cursor.Decode(&project); err != nil {
-			fmt.Println(err)
-		}
-		allProjects = append(allProjects, project)
-	}
-	if err := cursor.Err(); err != nil {
-		fmt.Println(err)
+	if err = cursor.All(c, &allProjects); err != nil {
+		panic(err)
 	}
 
 	c.JSON(200, allProjects)
-
 }
 
 // ProjectInfo Gives information of a Project
@@ -140,13 +130,13 @@ func ProjectInfo(c *gin.Context)  {
 
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"_id":projectID}
 
 	if err := mongo.Projects.FindOne(c, filter).Decode(&project); err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	c.JSON(200, project)
@@ -157,7 +147,7 @@ func AllUsersInProject(c *gin.Context)  {
 
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	matchStage := bson.D{{Key: "$match", Value:bson.D{{Key:"projectid", Value:projectID}}}}
@@ -168,11 +158,11 @@ func AllUsersInProject(c *gin.Context)  {
 	if err != nil {
 		panic(err)
 	}
+
 	var rules []bson.M
 	if err = showLoadedCursor.All(c, &rules); err != nil {
 		panic(err)
 	}
-	fmt.Println(rules)
 
 	c.JSON(200, rules)
 }

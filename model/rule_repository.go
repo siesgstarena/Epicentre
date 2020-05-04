@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/services/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,12 +15,12 @@ func CreateRule(c *gin.Context)  {
 
 	userID, err := primitive.ObjectIDFromHex(rule.UserID.Hex())
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	projectID, err := primitive.ObjectIDFromHex(rule.ProjectID.Hex())
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	_, err = mongo.Rules.InsertOne(c, bson.M{
@@ -43,7 +42,7 @@ func CreateRule(c *gin.Context)  {
 	})
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	c.JSON(200, gin.H{"message":"rule Created Sucessfully"})
@@ -57,17 +56,17 @@ func EditRule(c *gin.Context)  {
 
 	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	userID, err := primitive.ObjectIDFromHex(rule.UserID.Hex())
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	projectID, err := primitive.ObjectIDFromHex(rule.ProjectID.Hex())
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"_id": ruleID} 
@@ -95,7 +94,7 @@ func EditRule(c *gin.Context)  {
 	result, err := mongo.Rules.UpdateOne(c,filter,update)
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	if result.MatchedCount > 0 {
@@ -110,12 +109,12 @@ func DeleteRule(c *gin.Context)  {
 
 	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	resultRule, err := mongo.Rules.DeleteOne(c, bson.M{"_id": ruleID})
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	if resultRule.DeletedCount > 0 {
@@ -132,13 +131,13 @@ func RuleInfo(c *gin.Context)  {
 
 	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"_id":ruleID}
 
 	if err := mongo.Rules.FindOne(c, filter).Decode(&rule); err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	c.JSON(200, rule)

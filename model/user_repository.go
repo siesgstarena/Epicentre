@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/services/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,7 +20,7 @@ func CreateUser(c *gin.Context)  {
 	})
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	c.JSON(200, gin.H{"message":"User Created Sucessfully"})
@@ -36,7 +34,7 @@ func EditUser(c *gin.Context)  {
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"_id": userID} 
@@ -52,7 +50,7 @@ func EditUser(c *gin.Context)  {
 	result, err := mongo.Users.UpdateOne(c,filter,update)
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	if result.MatchedCount > 0 {
@@ -67,17 +65,17 @@ func DeleteProject(c *gin.Context)  {
 
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	resultRule, err := mongo.Rules.DeleteMany(c, bson.M{"projectid": projectID})
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	
 	resultproject, err := mongo.Projects.DeleteOne(c,bson.M{"_id": projectID})
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	if resultRule.DeletedCount > 0 || resultproject.DeletedCount > 0 {
@@ -94,13 +92,13 @@ func UserInfo(c *gin.Context)  {
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"_id":userID}
 
 	if err := mongo.Users.FindOne(c, filter).Decode(&user); err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	c.JSON(200, user)
@@ -113,18 +111,18 @@ func RuleForAProjectConnectedToUser(c *gin.Context)  {
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	projectID, err := primitive.ObjectIDFromHex(c.Param("projectid"))
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	filter := bson.M{"userid":userID,"projectid":projectID}
 
 	if err := mongo.Rules.FindOne(c, filter).Decode(&rule); err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	c.JSON(200, rule)
