@@ -55,5 +55,10 @@ func LoadRouter(router *gin.Engine) {
 		rule.DELETE("delete/:id", model.DeleteRule)
 	}
 
+	webhook := router.Group("/webhook")
+	{
+		webhook.POST("heroku", web.ReceiveWebhooks)
+	}
+
 	logger.Log.Info("Initialization of routers Finished")
 }
