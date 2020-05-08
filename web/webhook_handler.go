@@ -8,7 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/siesgstarena/epicentre/services/mongo"
 	"github.com/siesgstarena/epicentre/config"
+	"github.com/siesgstarena/epicentre/model"
 )
 
 type subscribeResponse struct {
@@ -18,9 +22,19 @@ type subscribeResponse struct {
 }
 
 // SubscribeHerokuWebhook Change Subscription of Webhook
-func SubscribeHerokuWebhook(AppID string) ( string, error)  {
+func SubscribeHerokuWebhook (c *gin.Context){
 
-	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks", AppID)
+	var project model.Projects
+	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		panic(err)
+	}
+
+	if err := mongo.Projects.FindOne(c, bson.M{"_id":projectID}).Decode(&project); err != nil {
+		panic(err)
+	}
+
+	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks", project.HerokuAppID)
 	method := "POST"
 	message := map[string]interface{}{
 		"include": []string {
@@ -32,7 +46,7 @@ func SubscribeHerokuWebhook(AppID string) ( string, error)  {
 	payload, err := json.Marshal(message)
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		panic(err)
 	}
 
 	timeout := time.Duration(5 * time.Second)
@@ -42,7 +56,7 @@ func SubscribeHerokuWebhook(AppID string) ( string, error)  {
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		panic(err)
 	}
 	req.Header.Add("Accept", "application/vnd.heroku+json; version=3.webhooks")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.HerokuAPIToken))
@@ -52,28 +66,44 @@ func SubscribeHerokuWebhook(AppID string) ( string, error)  {
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		panic(err)
 	}
 	defer res.Body.Close()
 
-	fmt.Println(string(body))
-
 	var jsonResponse subscribeResponse
-
 	err = json.Unmarshal([]byte(string(body)),&jsonResponse)
 	if err != nil {
 		fmt.Println(err)
 	}
+	var webhookID = jsonResponse.ID
 
-	var WebhookID = jsonResponse.ID
-
-	return WebhookID,nil
+	update := bson.M{
+		"$set": bson.M{
+			"herokuwebhookID": webhookID,
+		},
+	}
+	result, err := mongo.Projects.UpdateOne(c,bson.M{"_id": projectID},update)
+	if result.MatchedCount > 0 {
+		c.JSON(200, gin.H{"message":"Webhook Subscribed Sucessfully"})
+	} else {
+		c.JSON(200, gin.H{"message":"Some error try again"})
+	}
 }
 
 // DeleteWebhook Delete Webhook for the project
-func DeleteWebhook(AppID string, WebhookID string) error  {
+func DeleteWebhook(c *gin.Context) {
 
-	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks/%s", AppID, WebhookID)
+	var project model.Projects
+	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		panic(err)
+	}
+
+	if err := mongo.Projects.FindOne(c, bson.M{"_id":projectID}).Decode(&project); err != nil {
+		panic(err)
+	}
+
+	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks/%s", project.HerokuAppID, project.HerokuWebhookID)
 	method := "DELETE"
 	timeout := time.Duration(5 * time.Second)
 	client := http.Client{
@@ -82,7 +112,7 @@ func DeleteWebhook(AppID string, WebhookID string) error  {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		panic(err)
 	}
 	req.Header.Add("Accept", "application/vnd.heroku+json; version=3.webhooks")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.HerokuAPIToken))
@@ -91,7 +121,17 @@ func DeleteWebhook(AppID string, WebhookID string) error  {
 	_, err = ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
 
-	return nil
+	update := bson.M{
+		"$unset": bson.M{
+			"herokuwebhookID": "",
+		},
+	}
+	result, err := mongo.Projects.UpdateOne(c,bson.M{"_id": projectID},update)
+	if result.MatchedCount > 0 {
+		c.JSON(200, gin.H{"message":"Webhook UnSubscribed Sucessfully"})
+	} else {
+		c.JSON(200, gin.H{"message":"Some error try again"})
+	}
 }
 
 

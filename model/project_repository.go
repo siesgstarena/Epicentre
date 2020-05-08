@@ -3,10 +3,9 @@ package model
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/services/mongo"
-	"github.com/siesgstarena/epicentre/web"
-	MongoDB "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	MongoDB "go.mongodb.org/mongo-driver/mongo"
 )
 
 // CreateProject Creates & Stores in MongoDB Database
@@ -15,17 +14,11 @@ func CreateProject(c *gin.Context)  {
 	var project Projects
 	c.BindJSON(&project)
 
-	webhookID, err := web.SubscribeHerokuWebhook(project.HerokuAppID)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = mongo.Projects.InsertOne(c, bson.M{
+	_, err := mongo.Projects.InsertOne(c, bson.M{
 		"name":project.Name,
 		"description":project.Description,
 		"admins":project.Admins,
 		"herokuappID": project.HerokuAppID,
-		"herokuwebhookID": webhookID,
 		"githuburl":project.GithubURL,
 		"healthurl":project.HealthURL,
 		"versionurl":project.VersionURL,
@@ -34,7 +27,7 @@ func CreateProject(c *gin.Context)  {
 		panic(err)
 	}
 
-	c.JSON(200, gin.H{"message":"Project Created & Subscribed Sucessfully"})
+	c.JSON(200, gin.H{"message":"Project Created Sucessfully"})
 }
 
 // EditProject Edits project details info
@@ -56,6 +49,7 @@ func EditProject(c *gin.Context)  {
 			"description":project.Description,
 			"admins":project.Admins,
 			"herokuappID": project.HerokuAppID,
+			"herokuwebhookID": project.HerokuWebhookID,
 			"githuburl":project.GithubURL,
 			"healthurl":project.HealthURL,
 			"versionurl":project.VersionURL,
@@ -66,9 +60,7 @@ func EditProject(c *gin.Context)  {
 
 	if err != nil {
 		panic(err)
-	}
-
-	if result.MatchedCount > 0 {
+	} else if result.MatchedCount > 0 {
 		c.JSON(200, gin.H{"message":"Project Edited Sucessfully"})
 	} else {
 		c.JSON(200, gin.H{"message":"No such project"})
@@ -92,18 +84,11 @@ func DeleteProject(c *gin.Context)  {
 	if err := mongo.Projects.FindOne(c, bson.M{"_id":projectID}).Decode(&project); err != nil {
 		panic(err)
 	}
-
-	err = web.DeleteWebhook(project.HerokuAppID,project.HerokuWebhookID)
-	if err != nil {
-		panic(err)
-	}
 	
 	resultproject, err := mongo.Projects.DeleteOne(c,bson.M{"_id": projectID})
 	if err != nil {
 		panic(err)
-	}
-
-	if resultRule.DeletedCount > 0 || resultproject.DeletedCount > 0 {
+	} else if resultRule.DeletedCount > 0 || resultproject.DeletedCount > 0 {
 		c.JSON(200, gin.H{"message":"Project deleted & Webhook unsubscribed Sucessfully"})
 	} else {
 		c.JSON(200, gin.H{"message":"No such project"})
@@ -147,6 +132,24 @@ func ProjectInfo(c *gin.Context)  {
 	filter := bson.M{"_id":projectID}
 
 	if err := mongo.Projects.FindOne(c, filter).Decode(&project); err != nil {
+		panic(err)
+	}
+
+	c.JSON(200, project)
+}
+
+// AllProjects Gives information of a All Projects
+func AllProjects(c *gin.Context)  {
+
+	filter :=  bson.M{}
+
+	cursor, err := mongo.Projects.Find(c, filter)
+	if err != nil {
+		panic(err)
+	}
+
+	var project []bson.M
+	if err = cursor.All(c, &project); err != nil {
 		panic(err)
 	}
 

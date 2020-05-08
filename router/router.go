@@ -33,6 +33,11 @@ func LoadRouter(router *gin.Engine) {
 		user.GET("/:id/project/:projectid",model.RuleForAProjectConnectedToUser)
 	}
 
+	users := router.Group("/users")
+	{
+		users.GET("/all",model.AllUsers)
+	}
+
 	admin := router.Group("/admin")
 	{
 		admin.GET("/:id", model.ProjectsWhereUserAdmin)
@@ -47,6 +52,11 @@ func LoadRouter(router *gin.Engine) {
 		project.GET("/:id/users",model.AllUsersInProject)
 	}
 
+	projects := router.Group("/projects")
+	{
+		projects.GET("/all",model.AllProjects)
+	}
+
 	rule := router.Group("/rule")
 	{
 		rule.GET("/:id",model.RuleInfo)
@@ -58,6 +68,12 @@ func LoadRouter(router *gin.Engine) {
 	webhook := router.Group("/webhook")
 	{
 		webhook.POST("heroku", web.ReceiveWebhooks)
+	}
+
+	heroku := router.Group("/heroku")
+	{
+		heroku.POST(":id", web.SubscribeHerokuWebhook)
+		heroku.DELETE(":id", web.DeleteWebhook)
 	}
 
 	logger.Log.Info("Initialization of routers Finished")

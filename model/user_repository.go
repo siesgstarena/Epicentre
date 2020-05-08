@@ -92,6 +92,24 @@ func DeleteUser(c *gin.Context)  {
 	}
 }
 
+// AllUsers Gives information of a All Users
+func AllUsers(c *gin.Context)  {
+
+	filter :=  bson.M{}
+
+	cursor, err := mongo.Users.Find(c, filter)
+	if err != nil {
+		panic(err)
+	}
+
+	var user []bson.M
+	if err = cursor.All(c, &user); err != nil {
+		panic(err)
+	}
+
+	c.JSON(200, user)
+}
+
 // UserInfo Gives information of a User
 func UserInfo(c *gin.Context)  {
 
