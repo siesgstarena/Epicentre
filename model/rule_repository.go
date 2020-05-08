@@ -64,22 +64,10 @@ func EditRule(c *gin.Context)  {
 		panic(err)
 	}
 
-	userID, err := primitive.ObjectIDFromHex(rule.UserID.Hex())
-	if err != nil {
-		panic(err)
-	}
-
-	projectID, err := primitive.ObjectIDFromHex(rule.ProjectID.Hex())
-	if err != nil {
-		panic(err)
-	}
-
 	filter := bson.M{"_id": ruleID} 
 
 	update := bson.M{
 		"$set": bson.M{
-			"userid": userID,
-			"projectid": projectID,
 			"addon-attachment": rule.HerokuAddonAttachment,
 			"addon": rule.HerokuAddon,
 			"app": rule.HerokuApp,

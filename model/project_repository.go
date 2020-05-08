@@ -89,7 +89,7 @@ func DeleteProject(c *gin.Context)  {
 	if err != nil {
 		panic(err)
 	} else if resultRule.DeletedCount > 0 || resultproject.DeletedCount > 0 {
-		c.JSON(200, gin.H{"message":"Project deleted & Webhook unsubscribed Sucessfully"})
+		c.JSON(200, gin.H{"message":"Project deleted Sucessfully"})
 	} else {
 		c.JSON(200, gin.H{"message":"No such project"})
 	}
