@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/services/mongo"
 	"github.com/siesgstarena/epicentre/web"
@@ -16,11 +15,17 @@ func CreateProject(c *gin.Context)  {
 	var project Projects
 	c.BindJSON(&project)
 
-	_, err := mongo.Projects.InsertOne(c, bson.M{
+	webhookID, err := web.SubscribeHerokuWebhook(project.HerokuAppID)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = mongo.Projects.InsertOne(c, bson.M{
 		"name":project.Name,
 		"description":project.Description,
 		"admins":project.Admins,
 		"herokuappID": project.HerokuAppID,
+		"herokuwebhookID": webhookID,
 		"githuburl":project.GithubURL,
 		"healthurl":project.HealthURL,
 		"versionurl":project.VersionURL,
@@ -28,12 +33,6 @@ func CreateProject(c *gin.Context)  {
 	if err != nil {
 		panic(err)
 	}
-
-	err = web.SubscribeHerokuWebhook(project.HerokuAppID)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Webhook Subscribed Successfully")
 
 	c.JSON(200, gin.H{"message":"Project Created & Subscribed Sucessfully"})
 }
@@ -76,35 +75,38 @@ func EditProject(c *gin.Context)  {
 	}
 }
 
-// DeleteUser Deletes user from MongoDB Database
-func DeleteUser(c *gin.Context)  {
+// DeleteProject Deletes project from MongoDB Database
+func DeleteProject(c *gin.Context)  {
 
-	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		panic(err)
 	}
 
-	resultUser, err := mongo.Users.DeleteOne(c, bson.M{"_id": userID})
+	resultRule, err := mongo.Rules.DeleteMany(c, bson.M{"projectid": projectID})
 	if err != nil {
 		panic(err)
 	}
 
-	resultRule, err := mongo.Rules.DeleteMany(c, bson.M{"userid": userID})
+	var project Projects
+	if err := mongo.Projects.FindOne(c, bson.M{"_id":projectID}).Decode(&project); err != nil {
+		panic(err)
+	}
+
+	err = web.DeleteWebhook(project.HerokuAppID,project.HerokuWebhookID)
+	if err != nil {
+		panic(err)
+	}
+	
+	resultproject, err := mongo.Projects.DeleteOne(c,bson.M{"_id": projectID})
 	if err != nil {
 		panic(err)
 	}
 
-	filter := bson.M{"admins": bson.M{"$elemMatch": bson.M{"$eq": userID}}}
-
-	resultproject, err := mongo.Projects.UpdateMany(c,filter,bson.M{ "$pull": bson.M{"admins": userID} })
-	if err != nil {
-		panic(err)
-	}
-
-	if resultUser.DeletedCount > 0 || resultRule.DeletedCount > 0 || resultproject.ModifiedCount > 0 {
-		c.JSON(200, gin.H{"message":"User deleted Sucessfully"})
+	if resultRule.DeletedCount > 0 || resultproject.DeletedCount > 0 {
+		c.JSON(200, gin.H{"message":"Project deleted & Webhook unsubscribed Sucessfully"})
 	} else {
-		c.JSON(200, gin.H{"message":"No such user"})
+		c.JSON(200, gin.H{"message":"No such project"})
 	}
 }
 

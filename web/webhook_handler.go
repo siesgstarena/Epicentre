@@ -11,8 +11,14 @@ import (
 	"github.com/siesgstarena/epicentre/config"
 )
 
+type subscribeResponse struct {
+	ID      string		`bson:"id,omitempty"`
+	Level   string		`bson:"level,omitempty"`
+	URL 	string  	`bson:"url,omitempty"`
+}
+
 // SubscribeHerokuWebhook Change Subscription of Webhook
-func SubscribeHerokuWebhook(AppID string) error  {
+func SubscribeHerokuWebhook(AppID string) ( string, error)  {
 
 	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks", AppID)
 	method := "POST"
@@ -26,7 +32,7 @@ func SubscribeHerokuWebhook(AppID string) error  {
 	payload, err := json.Marshal(message)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return "", err
 	}
 
 	timeout := time.Duration(5 * time.Second)
@@ -36,7 +42,7 @@ func SubscribeHerokuWebhook(AppID string) error  {
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return "", err
 	}
 	req.Header.Add("Accept", "application/vnd.heroku+json; version=3.webhooks")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.HerokuAPIToken))
@@ -46,11 +52,45 @@ func SubscribeHerokuWebhook(AppID string) error  {
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return "", err
 	}
 	defer res.Body.Close()
 
 	fmt.Println(string(body))
+
+	var jsonResponse subscribeResponse
+
+	err = json.Unmarshal([]byte(string(body)),&jsonResponse)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var WebhookID = jsonResponse.ID
+
+	return WebhookID,nil
+}
+
+// DeleteWebhook Delete Webhook for the project
+func DeleteWebhook(AppID string, WebhookID string) error  {
+
+	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks/%s", AppID, WebhookID)
+	method := "DELETE"
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	req.Header.Add("Accept", "application/vnd.heroku+json; version=3.webhooks")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.HerokuAPIToken))
+
+	res, err := client.Do(req)
+	_, err = ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+
 	return nil
 }
 

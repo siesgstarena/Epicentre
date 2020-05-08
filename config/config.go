@@ -19,7 +19,7 @@ type MainConfig struct {
 	Level      		string			`env:"LEVEL" envDefault:"info"`
 	OutputType 		string			`env:"OUTPUTTYPE" envDefault:"json"`
 	HerokuAPIToken	string			`env:"HEROKU_API_TOKEN" envDefault:"1111a111-a111-111a-111a-a1aa11aaa111"`
-	DeployedAppURL	string			`env:"DEPLOYEDURL" envDefault:"https://epicentre.herokuapp.com/webhook/heroku"`
+	DeployedAppURL	string			`env:"DEPLOYEDURL" envDefault:"https://epicentre.herokuapp.com"`
 }
 
 // LoadConfig Loads the config

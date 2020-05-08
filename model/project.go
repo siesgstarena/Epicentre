@@ -9,6 +9,7 @@ type Projects struct {
 	Description 	string             		`bson:"description,omitempty"`
 	Admins    		[]primitive.ObjectID    `bson:"admins,omitempty"`
 	HerokuAppID 	string					`bson:"herokuappID,omitempty"`
+	HerokuWebhookID string					`bson:"herokuwebhookID,omitempty"`
 	GithubURL		string					`bson:"githuburl,omitempty"`
 	HealthURL		string					`bson:"healthurl,omitempty"`	
 	VersionURL		string					`bson:"versionurl,omitempty"`	

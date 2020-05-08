@@ -60,28 +60,35 @@ func EditUser(c *gin.Context)  {
 	}
 }
 
-// DeleteProject Deletes project from MongoDB Database
-func DeleteProject(c *gin.Context)  {
+// DeleteUser Deletes user from MongoDB Database
+func DeleteUser(c *gin.Context)  {
 
-	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		panic(err)
 	}
 
-	resultRule, err := mongo.Rules.DeleteMany(c, bson.M{"projectid": projectID})
-	if err != nil {
-		panic(err)
-	}
-	
-	resultproject, err := mongo.Projects.DeleteOne(c,bson.M{"_id": projectID})
+	resultUser, err := mongo.Users.DeleteOne(c, bson.M{"_id": userID})
 	if err != nil {
 		panic(err)
 	}
 
-	if resultRule.DeletedCount > 0 || resultproject.DeletedCount > 0 {
-		c.JSON(200, gin.H{"message":"Project deleted Sucessfully"})
+	resultRule, err := mongo.Rules.DeleteMany(c, bson.M{"userid": userID})
+	if err != nil {
+		panic(err)
+	}
+
+	filter := bson.M{"admins": bson.M{"$elemMatch": bson.M{"$eq": userID}}}
+
+	resultproject, err := mongo.Projects.UpdateMany(c,filter,bson.M{ "$pull": bson.M{"admins": userID} })
+	if err != nil {
+		panic(err)
+	}
+
+	if resultUser.DeletedCount > 0 || resultRule.DeletedCount > 0 || resultproject.ModifiedCount > 0 {
+		c.JSON(200, gin.H{"message":"User deleted Sucessfully"})
 	} else {
-		c.JSON(200, gin.H{"message":"No such project"})
+		c.JSON(200, gin.H{"message":"No such user"})
 	}
 }
 
