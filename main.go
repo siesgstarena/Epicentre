@@ -31,5 +31,4 @@ func main() {
 	router.Run(":" + config.Config.Port)
 
 	// defer mongo.Client.Disconnect(*mongo.Ctx)
-
 }

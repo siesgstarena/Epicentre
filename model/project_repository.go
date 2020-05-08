@@ -1,8 +1,10 @@
 package model
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/services/mongo"
+	"github.com/siesgstarena/epicentre/web"
 	MongoDB "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,16 +20,22 @@ func CreateProject(c *gin.Context)  {
 		"name":project.Name,
 		"description":project.Description,
 		"admins":project.Admins,
+		"herokuappID": project.HerokuAppID,
 		"githuburl":project.GithubURL,
 		"healthurl":project.HealthURL,
 		"versionurl":project.VersionURL,
 	})
-
 	if err != nil {
 		panic(err)
 	}
 
-	c.JSON(200, gin.H{"message":"Project Created Sucessfully"})
+	err = web.SubscribeHerokuWebhook(project.HerokuAppID)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Webhook Subscribed Successfully")
+
+	c.JSON(200, gin.H{"message":"Project Created & Subscribed Sucessfully"})
 }
 
 // EditProject Edits project details info
@@ -48,6 +56,7 @@ func EditProject(c *gin.Context)  {
 			"name":project.Name,
 			"description":project.Description,
 			"admins":project.Admins,
+			"herokuappID": project.HerokuAppID,
 			"githuburl":project.GithubURL,
 			"healthurl":project.HealthURL,
 			"versionurl":project.VersionURL,
