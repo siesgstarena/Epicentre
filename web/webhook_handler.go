@@ -39,17 +39,18 @@ func SubscribeHerokuWebhook(AppID string) error  {
 		return err
 	}
 	req.Header.Add("Accept", "application/vnd.heroku+json; version=3.webhooks")
-	req.Header.Add("Authorization", "Bearer"+config.Config.HerokuAPIToken)
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.HerokuAPIToken))
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := client.Do(req)
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 	defer res.Body.Close()
 
-	fmt.Println(url)
-	fmt.Println(payload)
 	fmt.Println(string(body))
-
 	return nil
 }
 
