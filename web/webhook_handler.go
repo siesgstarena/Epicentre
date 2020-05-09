@@ -134,13 +134,26 @@ func DeleteWebhook(c *gin.Context) {
 	}
 }
 
-
-// ReceiveWebhooks Accept Data Comming from Heroku as Webhook
-func ReceiveWebhooks(c *gin.Context)  {
+// ReceiveHerokuWebhooks Accept Data Comming from Heroku as Webhook
+func ReceiveHerokuWebhooks(c *gin.Context)  {
 
 	var info map[string]interface{}
 
 	c.BindJSON(&info)
+
+	fmt.Println(info)
+
+	c.JSON(204,"Webhook Reveived")
+}
+
+// ReceiveGithubWebhooks Accept Data Comming from Github as Webhook
+func ReceiveGithubWebhooks(c *gin.Context)  {
+
+	var info map[string]interface{}
+
+	c.BindJSON(&info)
+
+	fmt.Println(c.Request.Header.Get("X-GitHub-Event"))
 
 	fmt.Println(info)
 

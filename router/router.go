@@ -67,7 +67,8 @@ func LoadRouter(router *gin.Engine) {
 
 	webhook := router.Group("/webhook")
 	{
-		webhook.POST("heroku", web.ReceiveWebhooks)
+		webhook.POST("heroku", web.ReceiveHerokuWebhooks)
+		webhook.POST("github", web.ReceiveGithubWebhooks)
 	}
 
 	heroku := router.Group("/heroku")
