@@ -10,7 +10,7 @@ import (
 // CreateUser Creates & Stores in MongoDB Database
 func CreateUser(c *gin.Context)  {
 
-	var user Users
+	var user User
 	c.BindJSON(&user)
 
 	_, err := mongo.Users.InsertOne(c, bson.M{
@@ -29,7 +29,7 @@ func CreateUser(c *gin.Context)  {
 // EditUser Edits user profile info
 func EditUser(c *gin.Context)  {
 
-	var user Users
+	var user User
 	c.BindJSON(&user)
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
@@ -113,7 +113,7 @@ func AllUsers(c *gin.Context)  {
 // UserInfo Gives information of a User
 func UserInfo(c *gin.Context)  {
 
-	var user Users
+	var user User
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
@@ -132,7 +132,7 @@ func UserInfo(c *gin.Context)  {
 // RuleForAProjectConnectedToUser Gives information of a Rule for a Project for a perticular User
 func RuleForAProjectConnectedToUser(c *gin.Context)  {
 
-	var rule Rules
+	var rule Rule
 
 	userID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {

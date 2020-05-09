@@ -10,7 +10,7 @@ import (
 // CreateRule Creates & Stores in MongoDB Database
 func CreateRule(c *gin.Context)  {
 
-	var rule Rules 
+	var rule Rule 
 	c.BindJSON(&rule)
 
 	userID, err := primitive.ObjectIDFromHex(rule.UserID.Hex())
@@ -58,7 +58,7 @@ func CreateRule(c *gin.Context)  {
 // EditRule Edits rules for project info
 func EditRule(c *gin.Context)  {
 
-	var rule Rules 
+	var rule Rule 
 	c.BindJSON(&rule)
 
 	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
@@ -129,7 +129,7 @@ func DeleteRule(c *gin.Context)  {
 // RuleInfo Gives information of a Rule
 func RuleInfo(c *gin.Context)  {
 
-	var rule Rules
+	var rule Rule
 
 	ruleID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {

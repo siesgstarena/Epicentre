@@ -24,7 +24,7 @@ type subscribeResponse struct {
 // SubscribeHerokuWebhook Change Subscription of Webhook
 func SubscribeHerokuWebhook (c *gin.Context){
 
-	var project model.Projects
+	var project model.Project
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		panic(err)
@@ -93,7 +93,7 @@ func SubscribeHerokuWebhook (c *gin.Context){
 // DeleteWebhook Delete Webhook for the project
 func DeleteWebhook(c *gin.Context) {
 
-	var project model.Projects
+	var project model.Project
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		panic(err)

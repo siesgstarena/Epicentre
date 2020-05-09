@@ -2,8 +2,8 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-//Projects Type exported for use in API
-type Projects struct {
+//Project Type exported for use in API
+type Project struct {
 	ID          	primitive.ObjectID 		`bson:"_id,omitempty"`
 	Name       		string             		`bson:"name,omitempty"`
 	Description 	string             		`bson:"description,omitempty"`

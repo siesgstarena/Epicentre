@@ -11,7 +11,7 @@ import (
 // CreateProject Creates & Stores in MongoDB Database
 func CreateProject(c *gin.Context)  {
 
-	var project Projects
+	var project Project
 	c.BindJSON(&project)
 
 	_, err := mongo.Projects.InsertOne(c, bson.M{
@@ -33,7 +33,7 @@ func CreateProject(c *gin.Context)  {
 // EditProject Edits project details info
 func EditProject(c *gin.Context)  {
 
-	var project Projects
+	var project Project
 	c.BindJSON(&project)
 
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
@@ -80,7 +80,7 @@ func DeleteProject(c *gin.Context)  {
 		panic(err)
 	}
 
-	var project Projects
+	var project Project
 	if err := mongo.Projects.FindOne(c, bson.M{"_id":projectID}).Decode(&project); err != nil {
 		panic(err)
 	}
@@ -122,7 +122,7 @@ func ProjectsWhereUserAdmin(c *gin.Context)  {
 // ProjectInfo Gives information of a Project
 func ProjectInfo(c *gin.Context)  {
 
-	var project Projects
+	var project Project
 
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
