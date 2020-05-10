@@ -24,7 +24,9 @@ type (
 
 	// GithubDetails Info regarding project
 	GithubDetails struct {
-		URL				string					`bson:"url,omitempty"`
+		Owner 			string 					`bson:"owner,omitempty"`
+		RepoName 		string 					`bson:"repoName,omitempty"`
+		WebhookID 		int					`bson:"webhookID,omitempty"`
 	}
 
 )

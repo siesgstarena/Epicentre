@@ -36,6 +36,7 @@ func CreateRule(c *gin.Context)  {
 			"dyno": rule.Heroku.Dyno,
 		},
 		"github": bson.M {
+			"checkRun": rule.Github.CheckRun,
 			"create": rule.Github.Create,
 			"delete": rule.Github.Delete,
 			"deployment": rule.Github.Deployment,
@@ -84,6 +85,7 @@ func EditRule(c *gin.Context)  {
 				"dyno": rule.Heroku.Dyno,
 			},
 			"github": bson.M {
+				"checkRun": rule.Github.CheckRun,
 				"create": rule.Github.Create,
 				"delete": rule.Github.Delete,
 				"deployment": rule.Github.Deployment,

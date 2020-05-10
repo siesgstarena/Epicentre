@@ -79,7 +79,10 @@ func SubscribeWebhook (c *gin.Context){
 
 	update := bson.M{
 		"$set": bson.M{
-			"herokuwebhookID": webhookID,
+			"heroku": bson.M {
+				"appID": project.Heroku.AppID,
+				"webhookID": webhookID,
+			},
 		},
 	}
 	result, err := mongo.Projects.UpdateOne(c,bson.M{"_id": projectID},update)
@@ -122,8 +125,8 @@ func DeleteWebhook(c *gin.Context) {
 	defer res.Body.Close()
 
 	update := bson.M{
-		"$unset": bson.M{
-			"herokuwebhookID": "",
+		"heroku": bson.M {
+			"webhookID": "",
 		},
 	}
 	result, err := mongo.Projects.UpdateOne(c,bson.M{"_id": projectID},update)

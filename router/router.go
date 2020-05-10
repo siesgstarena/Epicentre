@@ -79,5 +79,11 @@ func LoadRouter(router *gin.Engine) {
 		herokuRouter.DELETE(":id", heroku.DeleteWebhook)
 	}
 
+	githubRouter := router.Group("/github")
+	{
+		githubRouter.POST(":id", github.SubscribeWebhook)
+		// githubRouter.DELETE(":id", github.DeleteWebhook)
+	}
+
 	logger.Log.Info("Initialization of routers Finished")
 }

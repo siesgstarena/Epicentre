@@ -22,7 +22,8 @@ func CreateProject(c *gin.Context)  {
 			"appID": project.Heroku.AppID,
 		},
 		"github": bson.M{ 
-			"url": project.Github.URL,
+			"owner": project.Github.Owner,
+			"repoName": project.Github.RepoName,
 		},
 		"healthurl":project.HealthURL,
 		"versionurl":project.VersionURL,
@@ -57,7 +58,9 @@ func EditProject(c *gin.Context)  {
 				"webhookID": project.Heroku.WebhookID,
 			},
 			"github": bson.M{ 
-				"url": project.Github.URL,
+				"owner": project.Github.Owner,
+				"repoName": project.Github.RepoName,
+				"webhookID": project.Github.WebhookID,
 			},
 			"healthurl":project.HealthURL,
 			"versionurl":project.VersionURL,
