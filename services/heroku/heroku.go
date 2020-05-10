@@ -1,4 +1,4 @@
-package web
+package heroku
 
 import (
 	"bytes"
@@ -21,8 +21,8 @@ type subscribeResponse struct {
 	URL 	string  	`bson:"url,omitempty"`
 }
 
-// SubscribeHerokuWebhook Change Subscription of Webhook
-func SubscribeHerokuWebhook (c *gin.Context){
+// SubscribeWebhook Change Subscription of Webhook
+func SubscribeWebhook (c *gin.Context){
 
 	var project model.Project
 	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
@@ -134,26 +134,12 @@ func DeleteWebhook(c *gin.Context) {
 	}
 }
 
-// ReceiveHerokuWebhooks Accept Data Comming from Heroku as Webhook
-func ReceiveHerokuWebhooks(c *gin.Context)  {
+// ReceiveWebhooks Accept Data Comming from Heroku as Webhook
+func ReceiveWebhooks(c *gin.Context)  {
 
 	var info map[string]interface{}
 
 	c.BindJSON(&info)
-
-	fmt.Println(info)
-
-	c.JSON(204,"Webhook Reveived")
-}
-
-// ReceiveGithubWebhooks Accept Data Comming from Github as Webhook
-func ReceiveGithubWebhooks(c *gin.Context)  {
-
-	var info map[string]interface{}
-
-	c.BindJSON(&info)
-
-	fmt.Println(c.Request.Header.Get("X-GitHub-Event"))
 
 	fmt.Println(info)
 

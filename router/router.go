@@ -5,6 +5,8 @@ import (
 	"github.com/siesgstarena/epicentre/logger"
 	"github.com/siesgstarena/epicentre/web"
 	"github.com/siesgstarena/epicentre/model"
+	"github.com/siesgstarena/epicentre/services/github"
+	"github.com/siesgstarena/epicentre/services/heroku"
 )
 
 // LoadRouter Configures all routes
@@ -35,17 +37,17 @@ func LoadRouter(router *gin.Engine) {
 
 	users := router.Group("/users")
 	{
-		users.GET("/all",model.AllUsers)
+		users.GET("all",model.AllUsers)
 	}
 
 	admin := router.Group("/admin")
 	{
-		admin.GET("/:id", model.ProjectsWhereUserAdmin)
+		admin.GET(":id", model.ProjectsWhereUserAdmin)
 	}
 
 	project := router.Group("/project")
 	{
-		project.GET("/:id",model.ProjectInfo)
+		project.GET(":id",model.ProjectInfo)
 		project.POST("", model.CreateProject)
 		project.PUT(":id", model.EditProject)
 		project.DELETE(":id", model.DeleteProject)
@@ -59,7 +61,7 @@ func LoadRouter(router *gin.Engine) {
 
 	rule := router.Group("/rule")
 	{
-		rule.GET("/:id",model.RuleInfo)
+		rule.GET(":id",model.RuleInfo)
 		rule.POST("", model.CreateRule)
 		rule.PUT(":id", model.EditRule)
 		rule.DELETE(":id", model.DeleteRule)
@@ -67,14 +69,14 @@ func LoadRouter(router *gin.Engine) {
 
 	webhook := router.Group("/webhook")
 	{
-		webhook.POST("heroku", web.ReceiveHerokuWebhooks)
-		webhook.POST("github", web.ReceiveGithubWebhooks)
+		webhook.POST("heroku", heroku.ReceiveWebhooks)
+		webhook.POST("github", github.ReceiveWebhooks)
 	}
 
-	heroku := router.Group("/heroku")
+	herokuRouter := router.Group("/heroku")
 	{
-		heroku.POST(":id", web.SubscribeHerokuWebhook)
-		heroku.DELETE(":id", web.DeleteWebhook)
+		herokuRouter.POST(":id", heroku.SubscribeWebhook)
+		herokuRouter.DELETE(":id", heroku.DeleteWebhook)
 	}
 
 	logger.Log.Info("Initialization of routers Finished")
