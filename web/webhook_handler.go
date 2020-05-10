@@ -34,7 +34,7 @@ func SubscribeHerokuWebhook (c *gin.Context){
 		panic(err)
 	}
 
-	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks", project.HerokuAppID)
+	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks", project.Heroku.AppID )
 	method := "POST"
 	message := map[string]interface{}{
 		"include": []string {
@@ -103,7 +103,7 @@ func DeleteWebhook(c *gin.Context) {
 		panic(err)
 	}
 
-	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks/%s", project.HerokuAppID, project.HerokuWebhookID)
+	url := fmt.Sprintf("https://api.heroku.com/apps/%s/webhooks/%s", project.Heroku.AppID , project.Heroku.WebhookID)
 	method := "DELETE"
 	timeout := time.Duration(5 * time.Second)
 	client := http.Client{

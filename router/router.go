@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/siesgstarena/epicentre/services/logger"
+	"github.com/siesgstarena/epicentre/logger"
 	"github.com/siesgstarena/epicentre/web"
 	"github.com/siesgstarena/epicentre/model"
 )

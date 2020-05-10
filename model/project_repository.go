@@ -18,8 +18,12 @@ func CreateProject(c *gin.Context)  {
 		"name":project.Name,
 		"description":project.Description,
 		"admins":project.Admins,
-		"herokuappID": project.HerokuAppID,
-		"githuburl":project.GithubURL,
+		"heroku": bson.M{ 
+			"appID": project.Heroku.AppID,
+		},
+		"github": bson.M{ 
+			"url": project.Github.URL,
+		},
 		"healthurl":project.HealthURL,
 		"versionurl":project.VersionURL,
 	})
@@ -48,9 +52,13 @@ func EditProject(c *gin.Context)  {
 			"name":project.Name,
 			"description":project.Description,
 			"admins":project.Admins,
-			"herokuappID": project.HerokuAppID,
-			"herokuwebhookID": project.HerokuWebhookID,
-			"githuburl":project.GithubURL,
+			"heroku": bson.M{ 
+				"appID": project.Heroku.AppID,
+				"webhookID": project.Heroku.WebhookID,
+			},
+			"github": bson.M{ 
+				"url": project.Github.URL,
+			},
 			"healthurl":project.HealthURL,
 			"versionurl":project.VersionURL,
 		},
