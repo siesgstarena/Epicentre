@@ -18,7 +18,7 @@ import (
 type subscribeResponse struct {
 	ID      int			`bson:"id,omitempty"`
 	Name   	string		`bson:"name,omitempty"`
-	Active 	string  	`bson:"active,omitempty"`
+	Active 	bool  	`bson:"active,omitempty"`
 }
 
 // SubscribeWebhook Change Subscription of Webhook
@@ -74,7 +74,6 @@ func SubscribeWebhook (c *gin.Context){
 		panic(err)
 	}
 	defer res.Body.Close()
-	fmt.Println(string(body))
 
 	var jsonResponse subscribeResponse
 	err = json.Unmarshal([]byte(string(body)),&jsonResponse)
@@ -96,6 +95,50 @@ func SubscribeWebhook (c *gin.Context){
 	result, err := mongo.Projects.UpdateOne(c,bson.M{"_id": projectID},update)
 	if result.MatchedCount > 0 {
 		c.JSON(200, gin.H{"message":"Webhook Subscribed Sucessfully"})
+	} else {
+		c.JSON(200, gin.H{"message":"Some error try again"})
+	}
+}
+
+// DeleteWebhook Delete Webhook for the project
+func DeleteWebhook(c *gin.Context) {
+
+	var project model.Project
+	projectID, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		panic(err)
+	}
+
+	if err := mongo.Projects.FindOne(c, bson.M{"_id":projectID}).Decode(&project); err != nil {
+		panic(err)
+	}
+
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/hooks/%d",project.Github.Owner,project.Github.RepoName,project.Github.WebhookID)
+	method := "DELETE"
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	req.Header.Add("Accept", "application/vnd.github.machine-man-preview+json")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.GithubAPIToken))
+
+	res, err := client.Do(req)
+	_, err = ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+
+	update := bson.M{
+		"$unset": bson.M{
+			"github.webhookID": "",
+		},
+	}
+	result, err := mongo.Projects.UpdateOne(c,bson.M{"_id": projectID},update)
+	if result.MatchedCount > 0 {
+		c.JSON(200, gin.H{"message":"Webhook UnSubscribed Sucessfully"})
 	} else {
 		c.JSON(200, gin.H{"message":"Some error try again"})
 	}

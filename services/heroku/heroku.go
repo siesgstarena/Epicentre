@@ -125,8 +125,8 @@ func DeleteWebhook(c *gin.Context) {
 	defer res.Body.Close()
 
 	update := bson.M{
-		"heroku": bson.M {
-			"webhookID": "",
+		"$unset": bson.M{
+			"heroku.webhookID": "",
 		},
 	}
 	result, err := mongo.Projects.UpdateOne(c,bson.M{"_id": projectID},update)
