@@ -10,20 +10,20 @@ type (
 		Name       		string             		`bson:"name,omitempty"`
 		Description 	string             		`bson:"description,omitempty"`
 		Admins    		[]primitive.ObjectID    `bson:"admins,omitempty"`
-		Heroku 			Heroku					`bson:"heroku,omitempty"`
-		Github			Github 					`bson:"github,omitempty"`
+		Heroku 			HerokuDetails					`bson:"heroku,omitempty"`
+		Github			GithubDetails 					`bson:"github,omitempty"`
 		HealthURL		string					`bson:"healthurl,omitempty"`	
 		VersionURL		string					`bson:"versionurl,omitempty"`	
 	}
 
-	// Heroku Info regarding project
-	Heroku struct {
+	// HerokuDetails Info regarding project
+	HerokuDetails struct {
 		AppID			string					`bson:"appID,omitempty"`
 		WebhookID 		string					`bson:"webhookID,omitempty"`
 	}
 
-	// Github Info regarding project
-	Github struct {
+	// GithubDetails Info regarding project
+	GithubDetails struct {
 		URL				string					`bson:"url,omitempty"`
 	}
 
