@@ -16,9 +16,9 @@ import (
 )
 
 type subscribeResponse struct {
-	ID      int			`bson:"id,omitempty"`
-	Name   	string		`bson:"name,omitempty"`
-	Active 	bool  	`bson:"active,omitempty"`
+	ID      int		`bson:"id,omitempty"`
+	Name   	string	`bson:"name,omitempty"`
+	Active 	bool	`bson:"active,omitempty"`
 }
 
 // SubscribeWebhook Change Subscription of Webhook
