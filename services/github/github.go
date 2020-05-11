@@ -21,6 +21,39 @@ type subscribeResponse struct {
 	Active 	bool	`bson:"active,omitempty"`
 }
 
+type appInfo struct {
+	ID		int		`json:"id,omitempty"`
+	Name	string	`json:"full_name,omitempty"`
+}
+
+// GetAllApps Get all info about apps on Github
+func GetAllApps(c *gin.Context)  {
+
+	url := "https://api.github.com/user/repos"
+  	method := "GET"
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Add("Accept", "application/vnd.github.machine-man-preview+json")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.GithubAPIToken))
+	res, err := client.Do(req)
+	body, err := ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+
+	var info []appInfo
+	err = json.Unmarshal([]byte(string(body)),&info)
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(200,info)
+}
+
 // SubscribeWebhook Change Subscription of Webhook
 func SubscribeWebhook (c *gin.Context){
 

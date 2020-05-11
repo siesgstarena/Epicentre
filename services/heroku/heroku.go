@@ -21,6 +21,40 @@ type subscribeResponse struct {
 	URL 	string  	`bson:"url,omitempty"`
 }
 
+type appInfo struct {
+	ID		string		`json:"id,omitempty"`
+	Name	string		`json:"name,omitempty"`
+	WebURL	string		`json:"web_url,omitempty"`
+}
+
+// GetAllApps Get all info about apps on heroku
+func GetAllApps(c *gin.Context)  {
+
+	url := "https://api.heroku.com/apps"
+	method := "GET"
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Add("Accept", "application/vnd.heroku+json; version=3.webhooks")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Config.HerokuAPIToken))
+	res, err := client.Do(req)
+	body, err := ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+
+	var info []appInfo
+	err = json.Unmarshal([]byte(string(body)),&info)
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(200,info)
+}
+
 // SubscribeWebhook Change Subscription of Webhook
 func SubscribeWebhook (c *gin.Context){
 

@@ -75,12 +75,14 @@ func LoadRouter(router *gin.Engine) {
 
 	herokuRouter := router.Group("/heroku")
 	{
+		herokuRouter.GET("/apps",heroku.GetAllApps)
 		herokuRouter.POST(":id", heroku.SubscribeWebhook)
 		herokuRouter.DELETE(":id", heroku.DeleteWebhook)
 	}
 
 	githubRouter := router.Group("/github")
 	{
+		githubRouter.GET("/apps",github.GetAllApps)
 		githubRouter.POST(":id", github.SubscribeWebhook)
 		githubRouter.DELETE(":id", github.DeleteWebhook)
 	}
