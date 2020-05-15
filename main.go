@@ -37,5 +37,15 @@ func main() {
 
 	router.Run(":" + config.Config.Port)
 
+	err = kafka.ProduceMessage("Testing Kafka Implementation")
+	if err != nil {
+		panic(err)
+	}
+
+	err = kafka.ConsumeMessage()
+	if err != nil {
+		panic(err)
+	}
+
 	// defer mongo.Client.Disconnect(*mongo.Ctx)
 }

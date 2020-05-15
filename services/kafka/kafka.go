@@ -3,11 +3,15 @@ package kafka
 import (
 	"fmt"
 	"os"
-    "os/signal"
-    "syscall"
 	kafkaConfiguration "github.com/siesgstarena/epicentre/config"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
+
+// Producer for producing Messages
+var Producer *kafka.Producer
+
+// Consumer for consuming Messages
+var Consumer *kafka.Consumer
 
 // LoadKafka Configures Producer & Consumer with provided configuration
 func LoadKafka() error {
@@ -20,27 +24,24 @@ func LoadKafka() error {
         "group.id":             kafkaConfiguration.Config.KafkaGroupID,
         "default.topic.config": kafka.ConfigMap{"auto.offset.reset": "earliest"},
     }
-    topic := fmt.Sprintf("%sdefault", kafkaConfiguration.Config.KafkaTopicPrefix)
+    
     p, err := kafka.NewProducer(config)
     if err != nil {
         fmt.Printf("Failed to create producer: %s\n", err)
 		os.Exit(1)
 		return err
     }
+    Producer = p
     fmt.Printf("Created Producer %v\n", p)
-	deliveryChan := make(chan kafka.Event)
-	fmt.Println(deliveryChan);
 	  
-	sigchan := make(chan os.Signal, 1)
-    signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
     c, err := kafka.NewConsumer(config)
     if err != nil {
         fmt.Fprintf(os.Stderr, "Failed to create consumer: %s\n", err)
 		os.Exit(1)
 		return err
     }
+    Consumer = c
     fmt.Printf("Created Consumer %v\n", c)
-    err = c.Subscribe(topic, nil)
 
 	return nil
 }
