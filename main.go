@@ -6,6 +6,7 @@ import (
 	"github.com/siesgstarena/epicentre/logger"
 	routes "github.com/siesgstarena/epicentre/router"
 	"github.com/siesgstarena/epicentre/services/mongo"
+	"github.com/siesgstarena/epicentre/services/kafka"
 )
 
 func main() {
@@ -23,6 +24,12 @@ func main() {
 	logger.Log.Info("Logger Installed Successfully")
 
 	mongo.LoadMongo()
+
+	err = kafka.LoadKafka()
+	if err != nil {
+		panic(err)
+	}
+	logger.Log.Info("Kafka Installed Successfully")
 
 	router := gin.Default()
 
