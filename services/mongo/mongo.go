@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"github.com/siesgstarena/epicentre/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -23,7 +24,7 @@ var Rules *mongo.Collection
 
 // LoadMongo Helps configure mongo
 func LoadMongo() {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://Swapnil:vijaya26@cluster0-oslju.mongodb.net/test?retryWrites=true&w=majority"))
+	client, err := mongo.NewClient(options.Client().ApplyURI(config.Config.MongoURI))
 	if err != nil {
 		fmt.Println(err)
 	}
