@@ -6,7 +6,6 @@ import (
 	"github.com/siesgstarena/epicentre/logger"
 	routes "github.com/siesgstarena/epicentre/router"
 	"github.com/siesgstarena/epicentre/services/mongo"
-	"github.com/siesgstarena/epicentre/services/kafka"
 )
 
 func main() {
@@ -25,27 +24,11 @@ func main() {
 
 	mongo.LoadMongo()
 
-	err = kafka.LoadKafka()
-	if err != nil {
-		panic(err)
-	}
-	logger.Log.Info("Kafka Installed Successfully")
-
 	router := gin.Default()
 
 	routes.LoadRouter(router)
 
 	router.Run(":" + config.Config.Port)
-
-	err = kafka.ProduceMessage("Testing Kafka Implementation")
-	if err != nil {
-		panic(err)
-	}
-
-	err = kafka.ConsumeMessage()
-	if err != nil {
-		panic(err)
-	}
 
 	// defer mongo.Client.Disconnect(*mongo.Ctx)
 }
