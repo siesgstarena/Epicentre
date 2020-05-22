@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"fmt"
-	"strings"
 	"github.com/siesgstarena/epicentre/config"
 	"github.com/siesgstarena/epicentre/logger"
 	routes "github.com/siesgstarena/epicentre/router"
@@ -26,8 +25,7 @@ func main() {
 	}
 	logger.Log.Info("Logger Installed Successfully")
 
-	brokersList:= config.Config.KafkaBrokerList
-	brokers:=strings.Split(brokersList, ",")
+	brokers:= config.Config.KafkaBrokerList
 	topic := config.Config.KafkaTopicPrefix + "default"
 
 	producer, err := kafka.NewProducer()

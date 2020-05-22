@@ -3,13 +3,11 @@ package kafka
 import (
 	"gopkg.in/Shopify/sarama.v1"
 	mainConfig "github.com/siesgstarena/epicentre/config"
-    "strings"
 )
 
 // NewProducer Kafka
 func NewProducer() (sarama.SyncProducer, error) {
-	brokersList:= mainConfig.Config.KafkaBrokerList
-	brokers:=strings.Split(brokersList, ",")
+	brokers:= mainConfig.Config.KafkaBrokerList
     producer, err := sarama.NewSyncProducer(brokers, config())
 	return producer, err
 }

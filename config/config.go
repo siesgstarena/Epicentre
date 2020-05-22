@@ -22,7 +22,7 @@ type MainConfig struct {
 	HerokuAPIToken		string		`env:"HEROKU_API_TOKEN" envDefault:"1111a111-a111-111a-111a-a1aa11aaa111"`
 	GithubAPIToken		string		`env:"GITHUB_API_TOKEN" envDefault:"1111a111-a111-111a-111a-a1aa11aaa111"`
 	DeployedAppURL		string		`env:"DEPLOYED_URL" envDefault:"https://epicentre.herokuapp.com"`
-	KafkaBrokerList		string		`env:"KAFKA_BROKERS" envDefault:"host1:9094,host2:9094,host3:9094"`
+	KafkaBrokerList		[]string		`env:"KAFKA_BROKERS" envDefault:"host1:9094,host2:9094,host3:9094"`
 	KafkaUsername		string		`env:"KAFKA_USERNAME" envDefault:"username"`
 	KafkaPassword		string		`env:"KAFKA_PASSWORD" envDefault:"password"`
 	KafkaGroupID		string		`env:"KAFKA_GROUPID" envDefault:"123456"`
