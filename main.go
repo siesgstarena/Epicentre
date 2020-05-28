@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"os"
+    "os/signal"
+    "syscall"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/config"
 	"github.com/siesgstarena/epicentre/logger"
@@ -31,15 +35,17 @@ func main() {
 	}
 	logger.Log.Info("Kafka Installed Successfully")
 
-	go kafka.ProduceMessage("Testing Kafka Implementation")
-	// if err != nil {
-	// 	panic(err)
-	// }
-
+	sigchan := make(chan os.Signal, 1)
+    signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
+    go func() {
+		<-sigchan
+		fmt.Println("\r- Ctrl+C pressed in Terminal")
+		kafka.Consumer.Close()
+		
+        panic("Consumer Received Terminating signal")
+	}()
+	
 	go kafka.ConsumeMessage()
-	// if err != nil {
-	// 	panic(err)
-	// }
 
 	router := gin.Default()
 
