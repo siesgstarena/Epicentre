@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"os"
     "os/signal"
-    "syscall"
 	"github.com/gin-gonic/gin"
 	"github.com/siesgstarena/epicentre/config"
 	"github.com/siesgstarena/epicentre/logger"
@@ -34,16 +32,6 @@ func main() {
 		panic(err)
 	}
 	logger.Log.Info("Kafka Installed Successfully")
-
-	sigchan := make(chan os.Signal, 1)
-    signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
-    go func() {
-		<-sigchan
-		fmt.Println("\r- Ctrl+C pressed in Terminal")
-		kafka.Consumer.Close()
-		
-        panic("Consumer Received Terminating signal")
-	}()
 	
 	go kafka.ConsumeMessage()
 
@@ -53,5 +41,8 @@ func main() {
 
 	router.Run(":" + config.Config.Port)
 
-	// defer mongo.Client.Disconnect(*mongo.Ctx)
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	logger.Log.Info("Shutdown Server ...")
 }
