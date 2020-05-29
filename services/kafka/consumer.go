@@ -8,7 +8,6 @@ import (
 // ConsumeMessage This function can be used to receive message on the topic
 func ConsumeMessage()  {
 	topic := fmt.Sprintf("%sdefault", kafkaConfiguration.Config.KafkaTopicPrefix)
-    
 	err := Consumer.Subscribe(topic, nil)
 	if err != nil {
         panic(err)

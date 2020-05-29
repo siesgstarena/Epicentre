@@ -3,23 +3,37 @@ package kafka
 import (
 	"encoding/json"
 	"fmt"
-	"time"
+	// "time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	kafkaConfiguration "github.com/siesgstarena/epicentre/config"
 )
 
-// Health type for kafka
-type Health struct {
-	Name     		string `json:"name"`
-	Description     string `json:"description"`
-	Health 			string `json:"health"`
-	Timestamp       time.Time `json:"timestamp"`
+// GithubData can be parsed using this type
+type GithubData struct {
+	Action		string		`json:"action,omitempty"`
+	Issue		issue		`json:"issue,omitempty"`
+	Repository	repository	`json:"repository,omitempty"`
+	Sender		sender		`json:"sender,omitempty"`
+}
+
+type issue struct {
+	URL		string	`json:"url,omitempty"`
+	Number	int		`json:"number,omitempty"`
+}
+
+type repository struct {
+	ID			int		`json:"id,omitempty"`
+	FullName	string	`json:"full_name,omitempty"`
+}
+
+type sender struct {
+	Login	string	`json:"login,omitempty"`
 }
 
 // ProduceMessage This function can be used to send message on the topic
-func ProduceMessage(health Health) error  {
-	message, _ := json.Marshal(health)
+func ProduceMessage(data GithubData) error  {
+	message, _ := json.Marshal(data)
 	topic := fmt.Sprintf("%sdefault", kafkaConfiguration.Config.KafkaTopicPrefix)
 	deliveryChan := make(chan kafka.Event)
 	err := Producer.Produce(&kafka.Message{TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny}, Value: []byte(message)}, deliveryChan)
